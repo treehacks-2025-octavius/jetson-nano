@@ -27,3 +27,16 @@ Some things that may or may not be blocking:
 
 1. Check the connection at `rtsp://<ip addresss of server device>:<port>/<path>`. This can be done with VLC or ffmpeg, but we only got it working with ffmpeg. You should see the source being streamed from the server.
 2. Use `v4l2feedbackloop` to set up the stream as a webcam in a socket. This can be verified using any webcam app (eg. Cheese? but it didn't work for us) or an online webcam test.
+```
+sudo apt update
+sudo apt install v4l2loopback-utils ffmpeg vlc gst-launch-1.0 gstreamer1.0-tools gstreamer1.0-plugins-bad gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly gstreamer1.0-libav
+
+# create a virtual device
+sudo modprobe v4l2loopback devices=1 video_nr=10 card_label="Virtual Camera" exclusive_caps=1
+
+# forward RTSP to virtual camera
+ffmpeg -i rtsp://your_rtsp_stream_url -f v4l2 -vcodec rawvideo -pix_fmt yuv420p /dev/video10
+
+# verify
+ffplay /dev/video10
+```
